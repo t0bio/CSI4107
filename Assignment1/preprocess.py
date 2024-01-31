@@ -32,10 +32,7 @@ os.chdir(path)
 with open("StopWords.txt", "r") as f:
     stop_words = f.read().splitlines()
 
-for file in files:
-    with open(file,'r') as f:
-        text = f.read()
-
+# Preprocessing helper functions
 def remove_tags(text):
     # Removes the HTML tags from the text
     soup = BeautifulSoup(text, "html.parser")
@@ -45,6 +42,12 @@ def remove_tags(text):
 def remove_punctuation(text):
     return re.sub(r'[^\w\s]', '', text) # regex command to remove punctuation
 
+def remove_numbers(text):
+    return re.sub(r'\d+', '', text) # regex command to remove numbers
+
+def removeextrawhitespace(text):
+    return re.sub(r'^\s*|\s\s*', ' ', text).strip()
+
 def remove_stopwords(text):
     # Removes stopwords from text
     tokens = word_tokenize(text)
@@ -52,6 +55,21 @@ def remove_stopwords(text):
     return filtered
 
 
+for file in files:
+    with open(file,'r') as f:
+        text = f.read()
+        text = text.lower()
+        text = remove_tags(text)
+        text = remove_punctuation(text)
+        text = remove_numbers(text)
+        text = removeextrawhitespace(text)
+        text = remove_stopwords(text)
+    
+    with open(file,'w') as f:
+        for word in text:
+            f.write(word)
+            f.write(" ")
+    f.close()
 
 # def remove_numbers(text):
 #     retru
