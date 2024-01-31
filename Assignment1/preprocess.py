@@ -4,6 +4,19 @@ import numpy as np
 import re
 import os
 import warnings
+
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('maxent_ne_chunker')
+
+from nltk.tokenize import word_tokenize
+from nltk.tokenize import sent_tokenize
+from nltk.corpus import stopwords
+
+from nltk.stem.porter import PorterStemmer
+from nltk.stem.wordnet import WordNetLemmatizer
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # Reading in the documents for preprocessing from the coll folder
