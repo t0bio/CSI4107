@@ -1,5 +1,6 @@
 import nltk
 import pandas as pd
+import pickle as pk
 import numpy as np
 import re
 import unicodedata
@@ -7,16 +8,16 @@ import os
 import warnings
 
 nltk.download('punkt')
-# nltk.download('stopwords')
-nltk.download('wordnet')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('maxent_ne_chunker')
+# # nltk.download('stopwords')
+# nltk.download('wordnet')
+# nltk.download('averaged_perceptron_tagger')
+# nltk.download('maxent_ne_chunker')
 
 from bs4 import BeautifulSoup
 
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import sent_tokenize
-from nltk.corpus import stopwords
+# from nltk.corpus import stopwords
 
 from nltk.stem.porter import PorterStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -29,7 +30,8 @@ cwd = os.getcwd()
 path = cwd + "/coll"
 files = os.listdir(path)
 os.chdir(path)
-with open("StopWords.txt", "r") as f:
+
+with open("/Users/oluwatobilobaogunbi/Desktop/UOttawa 2/Year 4/Winter2024/CSI4107 - Info Retreival & Internet/CSI4107Assignments/Assignment1/StopWords.txt", "r") as f:
     stop_words = f.read().splitlines()
 
 # Preprocessing helper functions
@@ -55,21 +57,19 @@ def remove_stopwords(text):
     return filtered
 
 
-for file in files:
-    with open(file,'r') as f:
-        text = f.read()
-        text = text.lower()
-        text = remove_tags(text)
-        text = remove_punctuation(text)
-        text = remove_numbers(text)
-        text = removeextrawhitespace(text)
-        text = remove_stopwords(text)
-    
-    with open(file,'w') as f:
-        for word in text:
-            f.write(word)
-            f.write(" ")
-    f.close()
+def readFiles(path):
+    # Reads in the files store in a json
+    for file in os.listdir(path):
+        with open(os.path.join(path, file), 'r') as f:
+            text = f.read()
+            text = text.lower()
+            text = remove_tags(text)
+            text = remove_punctuation(text)
+            text = remove_numbers(text)
+            text = removeextrawhitespace(text)
+            text = remove_stopwords(text)
 
+
+           
 # def remove_numbers(text):
 #     retru
