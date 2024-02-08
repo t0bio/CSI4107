@@ -56,9 +56,14 @@ def remove_stopwords(text):
     filtered = [word for word in tokens if not word in stop_words]
     return filtered
 
+def stem(text):
+    stemmer = PorterStemmer()
+    return [stemmer.stem(word) for word in text]
+
 
 def readFiles(path):
     # Reads in the files store in a json
+    v = dict()
     for file in os.listdir(path):
         with open(os.path.join(path, file), 'r') as f:
             text = f.read()
@@ -68,7 +73,14 @@ def readFiles(path):
             text = remove_numbers(text)
             text = removeextrawhitespace(text)
             text = remove_stopwords(text)
+            text = stem(text)
+            v[file] = text
+    
+    # write preprocessed files to a json for parts 3 and 4
+    with open('./preprocessed.json', 'w') as outfile:
+        pk.dump(v, outfile)
 
+    return v
 
            
 # def remove_numbers(text):
