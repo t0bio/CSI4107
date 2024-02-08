@@ -62,7 +62,6 @@ def stem(text):
 
 
 def readFiles(path):
-    # Reads in the files store in a json
     v = dict()
     for file in os.listdir(path):
         with open(os.path.join(path, file), 'r') as f:
