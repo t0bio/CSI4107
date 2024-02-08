@@ -26,10 +26,10 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 # A part of this code was derived and developed from the following webpage tutorial: https://michael-fuchs-python.netlify.app/2021/05/22/nlp-text-pre-processing-i-text-cleaning/#text-cleaning
 
 # Reading in the documents for preprocessing from the coll folder
-cwd = os.getcwd()
-path = cwd + "/coll"
-files = os.listdir(path)
-os.chdir(path)
+# cwd = os.getcwd()
+# path = cwd + "/coll"
+# files = os.listdir(path)
+# os.chdir(path)
 
 with open("/Users/oluwatobilobaogunbi/Desktop/UOttawa 2/Year 4/Winter2024/CSI4107 - Info Retreival & Internet/CSI4107Assignments/Assignment1/StopWords.txt", "r") as f:
     stop_words = f.read().splitlines()
