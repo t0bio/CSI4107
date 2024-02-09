@@ -1,6 +1,7 @@
 import os 
 import sys
 from preprocess import readFiles
+import json
 
 def querysplitter(text):
    sections = text.split('<num>') # diff sections of the query file
@@ -9,15 +10,17 @@ def querysplitter(text):
       if s.strip() == '':
          continue
       
-      num = s.split('\n')[0].strip() # strip based on the new line after the tag
+      num = s.split('\n')[0].strip() # section/query number
 
-      # write the new files to the query folder
-      with open('./queries/' + num + '.txt', 'w') as f:
-         f.write(s.strip() + '\n')
+      f = open('./queries/' + num + '.txt', 'w')
+      n = readFiles(s, num)
+      f.write(n)
+      f.close()
 
-
-def main():
-   querysplitter('./topics1-50.txt')
+path = './topics1-50.txt'
+with open(path, 'r') as f:
+   text = f.read()
+querysplitter(text)
 
 
 

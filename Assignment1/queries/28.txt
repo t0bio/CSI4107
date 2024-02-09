@@ -1,0 +1,24 @@
+28 
+
+
+<title>Dog Maulings 
+
+<desc>
+
+Document will report on attacks by dogs on humans in the U.S.
+
+<narr>
+
+A relevant document will note an attack that resulted in death
+or injury on any human, regardless of age, anywhere in the 
+United States.  It should identify actual cases and include
+the location of the attack, the individuals being attacked,
+the breed and number of dog(s) if known, and the resultant
+injuries or death.  Reports only of numbers of injuries or
+deaths attributable to dogs are not relevant unless specifics
+are included.
+
+</top>
+ 
+<top>
+

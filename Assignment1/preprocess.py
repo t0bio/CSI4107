@@ -94,7 +94,7 @@ def stem(text):
 #     return v\
 
 
-def readFiles(path): 
+def readFiles(path, num): 
     v = dict()
     text = path
     text = text.lower()
@@ -104,7 +104,7 @@ def readFiles(path):
     text = removeextrawhitespace(text)
     text = remove_stopwords(text)
     text = stem(text)
-    v[path] = text
+    v[num] = text
     return v
 
            
