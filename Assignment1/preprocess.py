@@ -73,39 +73,39 @@ def stem(text):
     return [stemmer.stem(word) for word in text]
 
 
-# def readFiles(path):
-#     v = dict()
-#     for file in os.listdir(path):
-#         with open(os.path.join(path, file), 'r') as f:
-#             text = f.read()
-#             text = text.lower()
-#             text = remove_tags(text)
-#             text = remove_punctuation(text)
-#             text = remove_numbers(text)
-#             text = removeextrawhitespace(text)
-#             text = remove_stopwords(text)
-#             text = stem(text)
-#             v[file] = text
-    
-#     # write preprocessed files to a json for parts 3 and 4
-#     with open('./preprocessed.json', 'w') as outfile:
-#         pk.dump(v, outfile)
-
-#     return v\
-
-
-def readFiles(path, num): 
+def readFiles(path):
     v = dict()
-    text = path
-    text = text.lower()
-    text = remove_tags(text)
-    text = remove_punctuation(text)
-    text = remove_numbers(text)
-    text = removeextrawhitespace(text)
-    text = remove_stopwords(text)
-    text = stem(text)
-    v[num] = text
+    for file in os.listdir(path):
+        with open(os.path.join(path, file), 'r') as f:
+            text = f.read()
+            text = text.lower()
+            text = remove_tags(text)
+            text = remove_punctuation(text)
+            text = remove_numbers(text)
+            text = removeextrawhitespace(text)
+            text = remove_stopwords(text)
+            text = stem(text)
+            v[file] = text
+    
+    # write preprocessed files to a json for parts 3 and 4
+    with open('./preprocessed.json', 'w') as outfile:
+        pk.dump(v, outfile)
+
     return v
+
+
+# def readFiles(path, num): 
+#     v = dict()
+#     text = path
+#     text = text.lower()
+#     text = remove_tags(text)
+#     text = remove_punctuation(text)
+#     text = remove_numbers(text)
+#     text = removeextrawhitespace(text)
+#     text = remove_stopwords(text)
+#     text = stem(text)
+#     v[num] = text
+#     return v
 
            
 # def remove_numbers(text):
