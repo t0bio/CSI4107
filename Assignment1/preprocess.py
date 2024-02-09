@@ -6,6 +6,7 @@ import re
 import unicodedata
 import os
 import warnings
+import ssl 
 
 nltk.download('punkt')
 # # nltk.download('stopwords')
@@ -31,7 +32,16 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 # files = os.listdir(path)
 # os.chdir(path)
 
-with open("/Users/oluwatobilobaogunbi/Desktop/UOttawa 2/Year 4/Winter2024/CSI4107 - Info Retreival & Internet/CSI4107Assignments/Assignment1/StopWords.txt", "r") as f:
+# paste this at the start of code
+
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
+with open("./StopWords.txt", "r") as f:
     stop_words = f.read().splitlines()
 
 # Preprocessing helper functions

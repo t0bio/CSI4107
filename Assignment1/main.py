@@ -2,9 +2,9 @@ from preprocess import readFiles
 from index import index
 
 def main():
-    path = './coll'
+    path = './test.txt'
     pre = readFiles(path)
-    index(pre)
+    print(pre)
 
 if __name__ == "__main__":
     main()
