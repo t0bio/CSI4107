@@ -87,7 +87,7 @@ def readFiles(path):
             text = stem(text)
             v[file] = text
     
-    # write preprocessed files to a json for parts 3 and 4
+    # write preprocessed files to a json 
     with open('./preprocessed.json', 'w') as outfile:
         pk.dump(v, outfile)
 
