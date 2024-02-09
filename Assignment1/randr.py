@@ -2,11 +2,6 @@
 # •       Input: One query and the Inverted Index (from Step2)
 # •       Output: Similarity values between the query and each of the documents. Rank the documents in decreasing order of similarity scores.
 import math
-import os 
-import re
-import ssl
-import sys
-import nltk 
 
 
 def cosine_similarity(v1, v2):# cosine similarity between two vecs
