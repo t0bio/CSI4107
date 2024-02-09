@@ -12,17 +12,16 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 
-def index(dict):
+def index(d):
     token = dict()
     count = 0
-    for key in dict:
-        for word in dict[key]:
+    for key in d:
+        for word in d[key]:
             if word not in token:
                 token[word] = {key}
             else:
                 token[word].add(key)
                 count += 1
-
     return token
 
 
