@@ -14,10 +14,16 @@ from nltk.stem import PorterStemmer
 
 def index(dict):
     token = dict()
+    count = 0
     for key in dict:
         for word in dict[key]:
             if word not in token:
                 token[word] = {key}
             else:
                 token[word].add(key)
-    
+                count += 1
+
+    return token
+
+
+

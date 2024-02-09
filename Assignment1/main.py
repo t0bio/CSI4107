@@ -19,7 +19,9 @@ specific figures, but said those freed Friday included an
 ex-Cabinet minister, a deputy minister, 10 generals, 115
 field-grade officers and 25 chaplains."""
     pre = readFiles(path)
-    print(pre)
+    next = index(pre)
+    print(next)
+
 
 if __name__ == "__main__":
     main()
