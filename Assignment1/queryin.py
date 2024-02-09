@@ -11,8 +11,10 @@ def querysplitter(text):
       
       num = s.split('\n')[0].strip() # strip based on the new line after the tag
 
-      with open(f'{num}.txt', 'w') as f:
-         f.write(s)
+      # write the new files to the query folder
+      with open('./queries/' + num + '.txt', 'w') as f:
+         f.write(s.strip() + '\n')
+
 
 def main():
    querysplitter('./topics1-50.txt')
