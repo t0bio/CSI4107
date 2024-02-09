@@ -14,7 +14,7 @@ def querysplitter(text):
 
       f = open('./queries/' + num + '.txt', 'w')
       n = readFiles(s, num)
-      f.write(n)
+      f.write(str(n))
       f.close()
 
 path = './topics1-50.txt'
