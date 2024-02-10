@@ -9,6 +9,7 @@ import os
 import re
 import string
 import nltk
+import math
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 
@@ -33,15 +34,15 @@ def index(d):
                 visited.add(word)
     return token
 
-    def findMaxFrequency(processedTokens): # calculate max frequency of word in lsit of tokens
+def findMaxFrequency(processedTokens): # calculate max frequency of word in lsit of tokens
     count = 0
     for x in processedTokens:
         tmp = processedTokens.count(x)
         if tmp > count:
-        count = tmp
+            count = tmp
     return count
     
-    def createDocumentVectors(collection): # doc vectors
+def createDocumentVectors(collection): # doc vectors
     weightedDict = dict()
     for line in collection:
         weightedDict[line[0]] = []
@@ -53,6 +54,26 @@ def index(d):
                 weightedDict[line[0]].append((token, tf_idf))
             visited.append(token)
     return weightedDict
+
+
+def createQueryVector(query, index):
+    queryVector = []
+    size = len(index)
+    for word in query:
+        if word in index:
+            tf_idf = (query[word]/len(query) * math.log2(size/(len(index[word]))))
+            queryVector.append((word, tf_idf))
+    return queryVector
+
+def main():
+    for file in os.listdir('./queries'):
+        with open(os.path.join('./queries', file), 'r') as f:
+            q = f.read()
+            q2 = createQueryVector(q, indexx)
+
+
+
+
 
 
 
