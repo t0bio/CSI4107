@@ -42,7 +42,7 @@ def findMaxFrequency(processedTokens): # calculate max frequency of word in lsit
             count = tmp
     return count
     
-def createDocumentVectors(collection): # doc vectors
+def createDocumentVectors(collection, size): # doc vectors
     weightedDict = dict()
     for line in collection:
         weightedDict[line[0]] = []
@@ -55,22 +55,43 @@ def createDocumentVectors(collection): # doc vectors
             visited.append(token)
     return weightedDict
 
-
-def createQueryVector(query, index):
-    queryVector = []
-    size = len(index)
-    for word in query:
-        if word in index:
-            tf_idf = (query[word]/len(query) * math.log2(size/(len(index[word]))))
-            queryVector.append((word, tf_idf))
+def calculateQueryVector(query, index, size):
+    queryVector = defaultdict(float)
+    queryTerms = set(query)
+    for term in queryTerms:
+        if term in index:
+            df = len(index[term])  # document frequency
+            idf = math.log2(size / df) if df != 0 else 0
+            tf_idf = (1 + math.log2(query.count(term))) * idf
+            queryVector[term] = tf_idf
     return queryVector
 
-def main():
-    for file in os.listdir('./queries'):
-        with open(os.path.join('./queries', file), 'r') as f:
-            q = f.read()
-            q2 = createQueryVector(q, indexx)
+def cosine_similarity(v1, v2):# cosine similarity between two vecs
+        sumx = 0
+        sumy = 0
+        sumxy = 0
+        ans = 0
+        for i in range(len(v1)):
+            x = v1[i]
+            y = v2[i]
+            sumx += x * x
+            sumy += y * y
+            sumxy += x * y
+            ans = sumxy/math.sqrt(sumx * sumy)
+            return ans 
 
+def retrieveAndRank(query, invertedIndex, documentVectors):
+    queryVector = calculateQueryVector(query, invertedIndex, len(documentVectors))
+    
+    results = []
+    for docId, docVector in documentVectors.items():
+        similarity = cosine_similarity(queryVector, docVector)
+        results.append((docId, similarity))
+
+    # Rank the results based on similarity scores in descending order
+    results = sorted(results, key=lambda x: x[1], reverse=True)
+
+    return results
 
 
 
