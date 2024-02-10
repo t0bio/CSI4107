@@ -55,14 +55,15 @@ def createDocumentVectors(collection, size): # doc vectors
             visited.append(token)
     return weightedDict
 
-
-def createQueryVector(query, index):
-    queryVector = []
-    size = len(index)
-    for word in query:
-        if word in index:
-            tf_idf = (query[word]/len(query) * math.log2(size/(len(index[word]))))
-            queryVector.append((word, tf_idf))
+def calculateQueryVector(query, index, size):
+    queryVector = defaultdict(float)
+    queryTerms = set(query)
+    for term in queryTerms:
+        if term in index:
+            df = len(index[term])  # document frequency
+            idf = math.log2(size / df) if df != 0 else 0
+            tf_idf = (1 + math.log2(query.count(term))) * idf
+            queryVector[term] = tf_idf
     return queryVector
 
 def cosine_similarity(v1, v2):# cosine similarity between two vecs

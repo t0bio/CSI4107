@@ -5,12 +5,10 @@ import math
 from index import index
 from index import createDocumentVectors
 
+
 # query is a preprocessed dict of test query words
 # indexDict is the inverted index
 # collection is the preprocessed collection of documents
-def rank(query, indexDict, docVectors):
-    
-      
 
 def cosine_similarity(v1, v2):# cosine similarity between two vecs
         sumx = 0
