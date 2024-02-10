@@ -2,7 +2,15 @@
 # •       Input: One query and the Inverted Index (from Step2)
 # •       Output: Similarity values between the query and each of the documents. Rank the documents in decreasing order of similarity scores.
 import math
+from index import index
+from index import createDocumentVectors
 
+# query is a preprocessed dict of test query words
+# indexDict is the inverted index
+# collection is the preprocessed collection of documents
+def rank(query, indexDict, docVectors):
+    
+      
 
 def cosine_similarity(v1, v2):# cosine similarity between two vecs
         sumx = 0
@@ -18,6 +26,7 @@ def cosine_similarity(v1, v2):# cosine similarity between two vecs
             ans = sumxy/math.sqrt(sumx * sumy)
             return ans 
         
+
 
 
             

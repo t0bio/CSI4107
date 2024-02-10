@@ -1,5 +1,6 @@
 from preprocess import readFiles
 from index import index
+from randr import rank
 
 def main():
     path = './coll'
