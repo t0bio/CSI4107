@@ -33,5 +33,28 @@ def index(d):
                 visited.add(word)
     return token
 
+    def findMaxFrequency(processedTokens): # calculate max frequency of word in lsit of tokens
+    count = 0
+    for x in processedTokens:
+        tmp = processedTokens.count(x)
+        if tmp > count:
+        count = tmp
+    return count
+    
+    def createDocumentVectors(collection): # doc vectors
+    weightedDict = dict()
+    for line in collection:
+        weightedDict[line[0]] = []
+        maxFrequency = findMaxFrequency(line[1:])
+        visited = []
+        for token in line[1:]:
+            if token not in visited:
+                tf_idf = (countWordsInLine(token, line[1:])/maxFrequency) * math.log2(size/(len(indexDict[token])))
+                weightedDict[line[0]].append((token, tf_idf))
+            visited.append(token)
+    return weightedDict
+
+
+
 
 
