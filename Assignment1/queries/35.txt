@@ -1,1 +1,0 @@
-{'35': ['reform', 'welfar', 'system', 'document', 'report', 'reform', 'welfar', 'system', 'feder', 'state', 'local', 'level', 'govern', 'relev', 'document', 'report', 'actual', 'propos', 'overhaul', 'welfar', 'system', 'level', 'govern', 'exampl', 'reform', 'welfar', 'system', 'work', 'educ', 'train', 'program', 'aim', 'primarili', 'welfar', 'recipi']}

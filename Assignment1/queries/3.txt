@@ -1,1 +1,0 @@
-{'3': ['insur', 'coverag', 'pay', 'term', 'care', 'document', 'discuss', 'insur', 'coverag', 'term', 'care', 'confin', 'relev', 'document', 'discuss', 'exist', 'propos', 'insur', 'plan', 'government', 'commerci', 'individu', 'coverag', 'term', 'care', 'confin', 'institut', 'home', 'care']}

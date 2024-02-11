@@ -1,1 +1,0 @@
-{'39': ['real', 'motiv', 'murder', 'document', 'identifi', 'murder', 'motiv', 'kill', 'person', 'person', 'true', 'case', 'relev', 'descript', 'intent', 'murder', 'statement', 'murder', 'motiv', 'unintent', 'murder', 'charg', 'seconddegre', 'homicid', 'relev', 'motiv', 'state', 'action', 'led', 'victim', 'death']}

@@ -1,1 +1,0 @@
-{'28': ['dog', 'maul', 'document', 'report', 'attack', 'dog', 'human', 'relev', 'document', 'attack', 'result', 'death', 'injuri', 'human', 'age', 'unit', 'state', 'identifi', 'actual', 'case', 'locat', 'attack', 'individu', 'attack', 'breed', 'number', 'dog', 'known', 'result', 'injuri', 'death', 'report', 'number', 'injuri', 'death', 'attribut', 'dog', 'relev', 'specif']}

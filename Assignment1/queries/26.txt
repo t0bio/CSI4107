@@ -1,1 +1,0 @@
-{'26': ['reallif', 'privat', 'investig', 'document', 'refer', 'hire', 'privat', 'investig', 'reallif', 'describ', 'work', 'privat', 'investig', 'privat', 'detect', 'selfemploy', 'work', 'privat', 'agenc', 'document', 'describ', 'work', 'privat', 'detect', 'cite', 'specif', 'person']}
