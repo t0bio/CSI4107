@@ -28,12 +28,10 @@ def main():
             queryvec = calculateQueryVector(text, next, size)
             results = retrieveAndRank(queryvec, next, docvec)
 
-        with open('results.txt', 'w') as outfile:
-            for key, value in enumerate(results[:100], 1):
-                outfile.write(f"1 Q0 {str(key)} {str(value[0])} {str(key)} {str(value[1])} testrun\n")
-
-    outfile.close()
-
+        with open('results.txt', 'a') as outfile:
+            for key, (id, score) in enumerate(results[:1000],1):
+                outfile.write(f"1 Q0 {str(id)} {str(key)} {str(score)} Test\n")
+                # outfile.close()
 
 # if __name__ == "__main__":
 #     main()
