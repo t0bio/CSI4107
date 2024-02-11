@@ -94,12 +94,6 @@ def readFiles(path):
             text = remove_stopwords(text)
             text = stem(text)
             v[file] = text
-
-    
-    # write preprocessed files to a pickle file
-    with open('./preprocessed.pickle', 'wb') as outfile:
-        pk.dump(v, outfile, protocol=pk.HIGHEST_PROTOCOL)
-
     return v
 
 
