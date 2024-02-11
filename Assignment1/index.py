@@ -157,7 +157,6 @@ def cosine_similarity(v1, v2):# cosine similarity between two vecs
             return ans 
 
 def retrieveAndRank(query, invertedIndex, documentVectors):
-    print(documentVectors)
     queryVector = calculateQueryVector(query, invertedIndex, len(documentVectors))
     results = []
     for docId, docVector in documentVectors.items():
@@ -169,6 +168,7 @@ def retrieveAndRank(query, invertedIndex, documentVectors):
             heapq.heappushpop(results, (docId, similarity))
 
     # Rank the results based on similarity scores in descending order
+    print(results)
     results = sorted(results, key=lambda x: x[1], reverse=True)
 
     return results
