@@ -6,8 +6,6 @@ import time
 import ast
 import collections
 
-    
-
 def sizeofcoll(path):
     return len([file for file in os.listdir(path) if os.path.isfile(os.path.join(path,file))])
 
@@ -32,12 +30,14 @@ def main():
             text = f.read()
             textdic = clean2(text)
             queryvec = calculateQueryVector(textdic, vectorizer)
-            results = retrieveAndRank(queryvec, docvec, vectorizer,docnumbers)
+            results = retrieveAndRank(queryvec, docvec, vectorizer)
 
-        with open('results.txt', 'a') as out:
-            for rank, (id, docno, score) in enumerate(results[:1000], 1):
-                out.write(f"1 Q0 {docno} {rank} {score} testrunagain\n")
-       
+    # print the results into results.txt, The file should have the following format, for the top-1000 results for each query/topic (the queries should be ordered in ascending order):
+    #topic_id Q0 docno rank score tag
+    for rank, (id, score) in enumerate(results[:1000],1):
+        with open('results.txt', 'a') as f:
+            f.write(f"1 Q0 {docnumbers[id]} {rank} {score} tag\n")
+    
 
 # if __name__ == "__main__":
 #     main()
