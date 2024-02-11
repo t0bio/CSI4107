@@ -11,67 +11,64 @@ import re
 import string
 import nltk
 import math
+import sys # delete after
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from multiprocessing import Pool
 
 # counts how many times word appears in doc (TF):
-# def countWordsInLine(token, processedTokens):
-#   count = 0
-#   for x in processedTokens:
-#     if x == token:
-#       count = count + 1
-#   return float(count)
+def countWordsInLine(token, processedTokens):
+  count = 0
+  for x in processedTokens:
+    if x == token:
+      count = count + 1
+  return float(count)
 
 def index(d):
-    token = dict()
-    for key in d: # each doc in dictionary
-        # visited = set() # stores tokens that have been already visitied in the doc
-        # for word in d[key]:
-        #     if word not in visited: 
-        #         if word not in token: # if word is not already in token dic
-        #             token[word] = [(key, countWordsInLine(word, d[key]))] # tuple with doc ID and TF
-        #         else:
-        #             token[word].append((key, countWordsInLine(word, d[key])))
-        #         visited.add(word)
-        n = Counter(d[key])
-        for word, count in n.items():
-            if word not in token:
-                token[word] = [(key, count)]
-            else:
-                token[word].append((key, count))
-    return token
+    indexDict = dict()
+    for line, v in d.items():
+        visited=[]
+        for elem in v:
+            if elem not in visited:
+                if elem in indexDict:
+                    indexDict[elem].append((line, countWordsInLine(elem, v)))
+                else:
+                    indexDict[elem]=[(line, countWordsInLine(elem, v))]
+                visited.append(elem) 
+    return indexDict
 
 def findMaxFrequency(processedTokens): # calculate max frequency of word in lsit of tokens
-    # count = 0
-    # for x in processedTokens:
-    #     tmp = processedTokens.count(x)
-    #     if tmp > count:
-    #         count = tmp
-    return max(Counter(processedTokens).values())
+    count = 0
+    for x in processedTokens:
+        tmp = processedTokens.count(x)
+        if tmp > count:
+            count = tmp
+
+    return count
+    # return max(Counter(processedTokens).values())
     
-def createDocumentVectors(collection, size): # doc vectors
-    def vec(line):
-        doc, *tokens = line
-        maxFrequency = findMaxFrequency(tokens)
-        n = Counter(tokens)
-        return doc, [(n, (count/maxFrequency) * math.log2(size/len(collection))) for n, count in n.items()]
+def createDocumentVectors(collection, index, size): # doc vectors
+    # def vec(line):
+    #     doc, *tokens = line
+    #     maxFrequency = findMaxFrequency(tokens)
+    #     n = Counter(tokens)
+    #     return doc, [(n, (count/maxFrequency) * math.log2(size/len(collection))) for n, count in n.items()]
     
-    with Pool() as p:
-        return dict(p.map(vec, collection))
-    # weightedDict = dict()
-    # for line in collection:
-    #     weightedDict[line[0]] = []
-    #     maxFrequency = findMaxFrequency(line[1:])
-    #     # visited = []
-    #     # for token in line[1:]:
-    #     #     if token not in visited:
-    #     #         tf_idf = (countWordsInLine(token, line[1:])/maxFrequency) * math.log2(size/(len(indexDict[token])))
-    #     #         weightedDict[line[0]].append((token, tf_idf))
-    #     #     visited.append(token)
-    #     n = Counter(line[1:]) # number of occurences of words
-    #     weightedDict[line[0]] = [(n, (count/maxFrequency) * math.log2(size/len(collection))) for n, count in n.items()]
-    # return weightedDict
+    # with Pool() as p:
+    #     return dict(p.map(vec, collection))
+    weightedDict = dict()
+    for line, v in collection.items():
+        weightedDict[line] = []
+        maxFrequency = findMaxFrequency(v)
+        visited = []
+        for elem in v:      
+            if elem not in visited:
+                tf_idf = (countWordsInLine(elem, v)/maxFrequency) * math.log2(size/(len(index[elem])))
+                weightedDict[line].append((elem, tf_idf))
+            visited.append(elem)
+            # n = Counter(line[1:]) # number of occurences of words
+        # weightedDict[elem] = [(n, (count/maxFrequency) * math.log2(size/len(collection))) for n, count in n.items()]
+    return weightedDict
 
 def calculateQueryVector(query, index, size):
     # queryVector = defaultdict(float)
@@ -95,6 +92,56 @@ def calculateQueryVector(query, index, size):
             queryVector.append(tf_idf)
     return queryVector
 
+def retrieval_ranking(test_query, inverted_index):
+  # Setting up query vector
+  topics = test_query.lower().split()
+  queryVector = {}
+  maxFrequency = findMaxFrequency(topics)
+  
+  #calculating query vector values
+  for x in inverted_index:
+    if x in topics:
+      queryVector[x] = (0.5 + (0.5 * (countWordsInLine(x, topics)/maxFrequency))) * math.log2(size/(len(inverted_index[x])))
+    else:
+      queryVector[x]=0
+  
+  innerProduct = {}
+
+  #inner product calculation
+  for document_no in weightedDict:
+    for x in weightedDict[document_no]:
+      if document_no in innerProduct:
+        innerProduct[document_no] = innerProduct[document_no] + (x[1] * queryVector[x[0]])
+      else:   
+        innerProduct[document_no] = x[1] * queryVector[x[0]]
+
+  # Bottom part of COSINE SIM
+  cosineSIM = {}
+  queryWeights = 0
+  docWeights = {}
+  
+  #w_iq summation
+  for x in queryVector:
+    queryWeights = queryWeights + (queryVector.get(x)**2)
+  
+  # w_ij summation:
+  for document_no in weightedDict:
+    total = 0
+    weightsInDoc = weightedDict[document_no]
+    for x in weightsInDoc:
+      total = total + (x[1]**2)
+    docWeights[document_no] = total
+    
+#cosine simularity
+  for document_no in weightedDict:
+    if document_no in innerProduct:
+      cosineSIM[document_no] = innerProduct[document_no] / (math.sqrt(docWeights[document_no]) * math.sqrt(queryWeights))
+    else:
+      cosineSIM[document_no] = 0
+
+  sort_cosineSIM = sorted(cosineSIM.items(), key=lambda x: x[1], reverse=True)
+  return list(sort_cosineSIM)
+
 def cosine_similarity(v1, v2):# cosine similarity between two vecs
         sumx = 0
         sumy = 0
@@ -110,6 +157,7 @@ def cosine_similarity(v1, v2):# cosine similarity between two vecs
             return ans 
 
 def retrieveAndRank(query, invertedIndex, documentVectors):
+    print(documentVectors)
     queryVector = calculateQueryVector(query, invertedIndex, len(documentVectors))
     results = []
     for docId, docVector in documentVectors.items():

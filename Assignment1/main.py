@@ -14,12 +14,13 @@ def getqueries(path):
     return text
 
 def main():
+    
     path = './coll/'
     path2 = './queries/'
     size = sizeofcoll(path)
     pre = readFiles(path)
     next = index(pre)
-    docvec = createDocumentVectors(pre,size)
+    docvec = createDocumentVectors(pre, next, size)
 
     # loop over the files in the queries folder and store in a json
     for file in os.listdir(path2):
