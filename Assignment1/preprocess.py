@@ -86,11 +86,6 @@ def readFiles(path):
             text = remove_stopwords(text)
             text = stem(text)
             v[file] = text
-    
-    # write preprocessed files to a json 
-    with open('./preprocessed.json', 'w') as outfile:
-        pk.dump(v, outfile)
-
     return v
 
 

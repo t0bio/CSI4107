@@ -3,7 +3,7 @@
 # •       Input: Tokens obtained from the preprocessing module
 
 # •       Output: An inverted index for fast access
-from collections import defaultdict
+from collections import defaultdict, Counter
 import json
 import os
 import re
@@ -14,56 +14,75 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 
 # counts how many times word appears in doc (TF):
-def countWordsInLine(token, processedTokens):
-  count = 0
-  for x in processedTokens:
-    if x == token:
-      count = count + 1
-  return float(count)
+# def countWordsInLine(token, processedTokens):
+#   count = 0
+#   for x in processedTokens:
+#     if x == token:
+#       count = count + 1
+#   return float(count)
 
 def index(d):
     token = dict()
     for key in d: # each doc in dictionary
-        visited = set() # stores tokens that have been already visitied in the doc
-        for word in d[key]:
-            if word not in visited: 
-                if word not in token: # if word is not already in token dic
-                    token[word] = [(key, countWordsInLine(word, d[key]))] # tuple with doc ID and TF
-                else:
-                    token[word].append((key, countWordsInLine(word, d[key])))
-                visited.add(word)
+        # visited = set() # stores tokens that have been already visitied in the doc
+        # for word in d[key]:
+        #     if word not in visited: 
+        #         if word not in token: # if word is not already in token dic
+        #             token[word] = [(key, countWordsInLine(word, d[key]))] # tuple with doc ID and TF
+        #         else:
+        #             token[word].append((key, countWordsInLine(word, d[key])))
+        #         visited.add(word)
+        n = Counter(d[key])
+        for word, count in n.items():
+            if word not in token:
+                token[word] = [(key, count)]
+            else:
+                token[word].append((key, count))
     return token
 
 def findMaxFrequency(processedTokens): # calculate max frequency of word in lsit of tokens
-    count = 0
-    for x in processedTokens:
-        tmp = processedTokens.count(x)
-        if tmp > count:
-            count = tmp
-    return count
+    # count = 0
+    # for x in processedTokens:
+    #     tmp = processedTokens.count(x)
+    #     if tmp > count:
+    #         count = tmp
+    return max(Counter(processedTokens).values())
     
 def createDocumentVectors(collection, size): # doc vectors
     weightedDict = dict()
     for line in collection:
         weightedDict[line[0]] = []
         maxFrequency = findMaxFrequency(line[1:])
-        visited = []
-        for token in line[1:]:
-            if token not in visited:
-                tf_idf = (countWordsInLine(token, line[1:])/maxFrequency) * math.log2(size/(len(indexDict[token])))
-                weightedDict[line[0]].append((token, tf_idf))
-            visited.append(token)
+        # visited = []
+        # for token in line[1:]:
+        #     if token not in visited:
+        #         tf_idf = (countWordsInLine(token, line[1:])/maxFrequency) * math.log2(size/(len(indexDict[token])))
+        #         weightedDict[line[0]].append((token, tf_idf))
+        #     visited.append(token)
+        n = Counter(line[1:]) # number of occurences of words
+        weightedDict[line[0]] = [(n, (count/maxFrequency) * math.log2(size/len(collection))) for n, count in n.items()]
     return weightedDict
 
 def calculateQueryVector(query, index, size):
-    queryVector = defaultdict(float)
-    queryTerms = set(query)
-    for term in queryTerms:
+    # queryVector = defaultdict(float)
+    # queryTerms = set(query)
+    # for term in queryTerms:
+    #     if term in index:
+    #         df = len(index[term])  # document frequency
+    #         idf = math.log2(size / df) if df != 0 else 0
+    #         tf_idf = (1 + math.log2(query.count(term))) * idf
+    #         queryVector[term] = tf_idf
+    # return queryVector
+    queryVector = []
+    queryTerms = Counter()
+    for term in query:
+        queryTerms[term] += 1
+    for term, count in queryTerms.items():
         if term in index:
-            df = len(index[term])  # document frequency
-            idf = math.log2(size / df) if df != 0 else 0
-            tf_idf = (1 + math.log2(query.count(term))) * idf
-            queryVector[term] = tf_idf
+            df = len(index[term])
+            idf = math.log2(size/df) if df != 0 else 0
+            tf_idf = (1 + math.log2(count)) * idf
+            queryVector.append(tf_idf)
     return queryVector
 
 def cosine_similarity(v1, v2):# cosine similarity between two vecs
