@@ -4,6 +4,7 @@
 
 # •       Output: An inverted index for fast access
 from collections import defaultdict, Counter
+import heapq
 import json
 import os
 import re
@@ -12,6 +13,7 @@ import nltk
 import math
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
+from multiprocessing import Pool
 
 # counts how many times word appears in doc (TF):
 # def countWordsInLine(token, processedTokens):
@@ -49,19 +51,27 @@ def findMaxFrequency(processedTokens): # calculate max frequency of word in lsit
     return max(Counter(processedTokens).values())
     
 def createDocumentVectors(collection, size): # doc vectors
-    weightedDict = dict()
-    for line in collection:
-        weightedDict[line[0]] = []
-        maxFrequency = findMaxFrequency(line[1:])
-        # visited = []
-        # for token in line[1:]:
-        #     if token not in visited:
-        #         tf_idf = (countWordsInLine(token, line[1:])/maxFrequency) * math.log2(size/(len(indexDict[token])))
-        #         weightedDict[line[0]].append((token, tf_idf))
-        #     visited.append(token)
-        n = Counter(line[1:]) # number of occurences of words
-        weightedDict[line[0]] = [(n, (count/maxFrequency) * math.log2(size/len(collection))) for n, count in n.items()]
-    return weightedDict
+    def vec(line):
+        doc, *tokens = line
+        maxFrequency = findMaxFrequency(tokens)
+        n = Counter(tokens)
+        return doc, [(n, (count/maxFrequency) * math.log2(size/len(collection))) for n, count in n.items()]
+    
+    with Pool() as p:
+        return dict(p.map(vec, collection))
+    # weightedDict = dict()
+    # for line in collection:
+    #     weightedDict[line[0]] = []
+    #     maxFrequency = findMaxFrequency(line[1:])
+    #     # visited = []
+    #     # for token in line[1:]:
+    #     #     if token not in visited:
+    #     #         tf_idf = (countWordsInLine(token, line[1:])/maxFrequency) * math.log2(size/(len(indexDict[token])))
+    #     #         weightedDict[line[0]].append((token, tf_idf))
+    #     #     visited.append(token)
+    #     n = Counter(line[1:]) # number of occurences of words
+    #     weightedDict[line[0]] = [(n, (count/maxFrequency) * math.log2(size/len(collection))) for n, count in n.items()]
+    # return weightedDict
 
 def calculateQueryVector(query, index, size):
     # queryVector = defaultdict(float)
@@ -101,11 +111,14 @@ def cosine_similarity(v1, v2):# cosine similarity between two vecs
 
 def retrieveAndRank(query, invertedIndex, documentVectors):
     queryVector = calculateQueryVector(query, invertedIndex, len(documentVectors))
-    
     results = []
     for docId, docVector in documentVectors.items():
         similarity = cosine_similarity(queryVector, docVector)
-        results.append((docId, similarity))
+        
+        if len(results) < 100:
+            heapq.heappush(results, (docId, similarity))
+        else:
+            heapq.heappushpop(results, (docId, similarity))
 
     # Rank the results based on similarity scores in descending order
     results = sorted(results, key=lambda x: x[1], reverse=True)
