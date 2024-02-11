@@ -120,7 +120,7 @@ def retrieveAndRank(query, invertedIndex, documentVectors):
 
     # Rank the results based on similarity scores in descending order
     results = sorted(results, key=lambda x: x[1], reverse=True)
-
+    print(results[0:10])
     return results
 
 
