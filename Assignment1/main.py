@@ -24,6 +24,7 @@ def main():
     # print(pre)
     next = index(pre)
     docvec,vectorizer = createDocumentVectors(pre)
+    fin = []
 
     # loop over the files in the queries folder and store in a json
     for file in os.listdir(path2):
@@ -32,11 +33,12 @@ def main():
             textdic = clean2(text)
             queryvec = calculateQueryVector(textdic, vectorizer)
             results = retrieveAndRank(queryvec, docvec, vectorizer)
-    
-    for n in docnumbers:
-        with open('results.txt', 'a') as outfile:
-            for rank, (id, score) in enumerate(results[:1000], 1):
-                outfile.write(f"1 Q0 {docnumbers[n]} {rank} {score} tag\n")
+            fin.extend([(file, id, rank, score) for rank, (id, score) in enumerate(results[:1000],1)])
+            
+    with open('results.txt', 'a') as out:
+        for file, id, rank, score in fin:
+            out.write(f"1 Q0 {docnumbers[id]} {rank} {score} testrunagain\n")
+       
 
 # if __name__ == "__main__":
 #     main()

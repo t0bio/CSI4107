@@ -79,13 +79,14 @@ def stem(text):
 
 def readFiles(path):
     v = dict()
-    docnumbers = []
+    docnumbers = dict()
     for file in os.listdir(path):
         with codecs.open(os.path.join(path, file), 'r', encoding='utf-8', errors='ignore') as f:
             text = f.read()
             docn = re.search(r'<DOCNO>(.*?)</DOCNO>', text)
             if docn:
-                docnumbers.append(docn.group(1))
+                docn = docn.group(1)
+                docnumbers[file] = docn
             text = text.lower()
             text = remove_numbers(text)
             text = remove_tags(text)
