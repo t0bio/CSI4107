@@ -1,0 +1,25 @@
+4
+
+
+<title>Oil Spills
+
+<desc>
+
+Document will identify major oil spills throughout the world.
+
+<narr>
+
+A relevant document will note the location of the spill, 
+amount of oil spilled, and the responsible corporation,
+if known. This will include shipborne accidents, offshore
+drilling and holding tank spills, but should not include
+intentional spills such as Iraq/Kuwait or leakage from
+broken pipes.  References to legislation brought about 
+by a spill, litigation and clean up efforts associated
+with a spill are not relevant unless specifics of the
+spill are included.
+
+</top>
+ 
+<top>
+

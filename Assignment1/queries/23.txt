@@ -1,0 +1,31 @@
+23 
+
+
+<title>Smoking Bans 
+
+<desc>
+
+Document will provide data on smoking bans initiated worldwide
+in the public and private sector workplace, on various modes of
+public transportation, and in commercial advertising.
+
+<narr>
+
+A relevant document would include data on smoking bans that have
+been initiated worldwide in the workplace, on various modes of
+transportation, and in commercial advertising.  Relevant 
+information would include such data as who initiated the ban,
+affected areas, enforcement policy/procedures if any, and any
+penalties that may be imposed.  Also relevant would be tobacco
+company reactions, legislation imposing a smoking ban, and
+legal actions or court decisions pertaining to a smoking ban.
+Not relevant would be documents containing public or private
+sector comments on smoking in general but not related to a 
+specific ban.  Also not relevant would be documents related
+to health hazards associated with smoking and not referring
+to a smoking ban.
+ 
+</top>
+ 
+<top>
+

@@ -1,0 +1,25 @@
+45
+
+
+<title>Stock Market Perturbations Attributable to
+Computer Initiated Trading
+
+<desc>Document will discuss positive or
+negative instances of stock market shifts primarily
+owing to computer assisted trading initiatives.
+
+
+<narr>To be relevant, a document will report
+on what stock market analysts or financial reporters
+consider reportable upward or downward shifts in
+any world-wide market caused at least partially if not
+entirely by computer programs which upon recognition of
+certain conditions triggered a buy or sell action by
+any category of stock market investor (individual,
+company, fund, etc).
+
+
+</top>
+ 
+<top>
+
