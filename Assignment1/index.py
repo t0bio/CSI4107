@@ -48,10 +48,16 @@ def calculateQueryVector(query, vectorizer):
     queryvec = vectorizer.transform([' '.join(query)])
     return queryvec
 
-def retrieveAndRank(queryvec, docvec, vectorizer):
+# def retrieveAndRank(queryvec, docvec, vectorizer):
+#     similarity = cosine_similarity(queryvec, docvec)
+#     results = list(enumerate(similarity[0]))
+#     results.sort(key=lambda x: x[1], reverse=True)
+#     return results
+
+def retrieveAndRank(queryvec, docvec, vectorizer, docnumbers):
     similarity = cosine_similarity(queryvec, docvec)
-    results = list(enumerate(similarity[0]))
-    results.sort(key=lambda x: x[1], reverse=True)
+    results = [(docno, docnumbers[docno], score) for docno, score in enumerate(similarity[0])]
+    results.sort(key=lambda x: x[2], reverse=True)
     return results
 
 

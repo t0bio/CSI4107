@@ -32,12 +32,11 @@ def main():
             text = f.read()
             textdic = clean2(text)
             queryvec = calculateQueryVector(textdic, vectorizer)
-            results = retrieveAndRank(queryvec, docvec, vectorizer)
-            fin.extend([(file, id, rank, score) for rank, (id, score) in enumerate(results[:1000],1)])
-            
-    with open('results.txt', 'a') as out:
-        for file, id, rank, score in fin:
-            out.write(f"1 Q0 {docnumbers[id]} {rank} {score} testrunagain\n")
+            results = retrieveAndRank(queryvec, docvec, vectorizer,docnumbers)
+
+        with open('results.txt', 'a') as out:
+            for rank, (id, docno, score) in enumerate(results[:1000], 1):
+                out.write(f"1 Q0 {docno} {rank} {score} testrunagain\n")
        
 
 # if __name__ == "__main__":
