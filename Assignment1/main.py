@@ -25,6 +25,7 @@ def main():
     next = index(pre)
     docvec,vectorizer = createDocumentVectors(pre)
     fin = []
+    print_vocabulary(next)
 
     # loop over the files in the queries folder and store in a json
     for file in os.listdir(path2):
@@ -46,7 +47,12 @@ def main():
             for filename, id, rank, score in fin:
                 out.write(f"{filename} Q0 {id} {rank} {score} TestRun\n")
 
-
+def print_vocabulary(inverted_index):
+    with open('vocabulary.txt', 'w') as file:
+        for x, (word, y) in enumerate(inverted_index.items()):
+            file.write(f"{word}\n")
+            if x == 99:  # Stop after writing the first 100 tokens
+                break
 
 # if __name__ == "__main__":
 #     main()
