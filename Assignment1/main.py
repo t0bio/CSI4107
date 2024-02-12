@@ -25,6 +25,7 @@ def main():
 
     # loop over the files in the queries folder and store in a json
     for file in os.listdir(path2):
+        filename, filenametxt = os.path.splitext(file)
         with open(os.path.join(path2, file), 'r') as f:
             text = f.read()
             textdic = clean2(text)
@@ -33,7 +34,7 @@ def main():
             
         with open('results.txt', 'a') as outfile:
             for key, (id, score) in enumerate(results[:1000],1):
-                outfile.write(f"1 Q0 {id} {key} {score} Test Run\n")
+                outfile.write(f" {filename} Q0 {id} {key} {score} Test Run\n")
                 # outfile.close()
 
 
