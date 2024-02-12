@@ -14,6 +14,8 @@ def getqueries(path):
         text = f.read()
     return text
 
+
+
 def main():
     path = './coll/'
     path2 = './queries/'
@@ -22,6 +24,7 @@ def main():
     # print(pre)
     next = index(pre)
     docvec,vectorizer = createDocumentVectors(pre)
+    fin = []
 
     # loop over the files in the queries folder and store in a json
     for file in os.listdir(path2):
@@ -31,11 +34,17 @@ def main():
             textdic = clean2(text)
             queryvec = calculateQueryVector(textdic, vectorizer)
             results = retrieveAndRank(queryvec, docvec, vectorizer)
+            fin.extend([(int(filename), id, rank, score) for rank, (id, score) in enumerate(results[:1000],1)])
             
-        with open('results.txt', 'a') as outfile:
-            for key, (id, score) in enumerate(results[:1000],1):
-                outfile.write(f" {filename} Q0 {id} {key} {score} Test Run\n")
-                # outfile.close()
+            fin.sort()
+
+        # with open('results.txt', 'a') as outfile:
+        #     for key, (id, score) in enumerate(results[:1000],1):
+        #         outfile.write(f" {filename} Q0 {id} {key} {score} TestRun\n")
+        #         # outfile.close()
+        with open('results.txt', 'a') as out:
+            for filename, id, rank, score in fin:
+                out.write(f"{filename} Q0 {id} {rank} {score} TestRun\n")
 
 
 
