@@ -1,0 +1,7 @@
+# ignoring the queries from A1
+/Assignment1/queries/
+
+/Assignment1/*.txt
+
+/Assignment1/__pycache__/
+
