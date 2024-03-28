@@ -3,75 +3,70 @@ from transformers import BertTokenizer, BertModel
 from sklearn.metrics.pairwise import cosine_similarity
 import time
 from preprocess import *
+from collections import defaultdict
 
 
 model = BertModel.from_pretrained('bert-base-uncased')
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-# Using BERT to compute the similarity between the query and every document in the collection
-# Use a boolean index to restrict the calculations to only documents that have at least one query word
 
 def index(d):
-    tokens = dict()
-    for key in d:
-        words = d.get(key)
+    ind = defaultdict(set)
+    for docId, doc in enumerate(d):
+        words = nltk.word_tokenize(doc)
         for word in words:
-            if word not in tokens:
-                tokens[word] = []
-            tokens[word].append(key)
-    return tokens
+            ind[word].add(docId)
+    return ind
 
 def createDocumentVectors(documents):
-    docVec = {}
-    for docId, doc in documents.items():
-        inputs = tokenizer(doc, return_tensors='pt', padding=True, truncation=True)
-        outputs = model(**inputs)
-        last_hidden_states = outputs.last_hidden_state
-        docVec[docId] = torch.mean(last_hidden_states, dim=1).detach().numpy()
-    return docVec
+    inputs = tokenizer(documents, return_tensors='pt', padding=True, truncation=True)
+    outputs = model(**inputs)
+    return outputs.last_hidden_state.mean(dim=1).detach().numpy()
 
 def calculateQueryVector(query):
     inputs = tokenizer(query, return_tensors='pt', padding=True, truncation=True)
     outputs = model(**inputs)
-    last_hidden_states = outputs.last_hidden_state
-    return torch.mean(last_hidden_states, dim=1).detach().numpy()
+    return outputs.last_hidden_state.mean(dim=1).detach().numpy()
 
-def retrieveAndRank(queryVec, docVec):
-    scores = {}
-    for docId, doc in docVec.items():
-        scores[docId] = cosine_similarity(queryVec, doc).item()
-    return sorted(scores.items(), key=lambda x: x[1], reverse=True)
+def getrelevantdocs(query, index):
+    words = nltk.word_tokenize(query)
+    docs = set()
+    for word in words:
+        if word in index:
+            docs = docs.union(index[word])
+    return docs
 
-def print_vocabulary(inverted_index):
-    with open('vocabulary.txt', 'w') as file:
-        for x, (word, y) in enumerate(inverted_index.items()):
-            file.write(f"{word}\n")
-            if x == 99:  # Stop after writing the first 100 tokens
-                break
-
-def main():
-    path = './coll/'
-    path2 = './queries/'
-    pre = readFiles(path)
-    next = index(pre)
-    docvec = createDocumentVectors(pre)
-    fin = []
-    print_vocabulary(next)
-
-    # loop over the files in the queries folder and store in a json
-    for file in os.listdir(path2):
-        filename, filenametxt = os.path.splitext(file)
-        with open(os.path.join(path2, file), 'r') as f:
+def loadDocuments():
+    with open('tokens.json', 'r') as f:
+        return json.load(f)
+    
+def loadQueries():
+    for file in os.listdir('queries'):
+        with open(os.path.join('queries', file), 'r') as f:
             text = f.read()
-            textdic = clean(text)
-            queryvec = calculateQueryVector(textdic)
-            results = retrieveAndRank(queryvec, docvec)
-            fin.extend([(int(filename), id, rank, score) for rank, (id, score) in enumerate(results[:1000],1)])
-            
-            fin.sort()
-
-        with open('results.txt', 'a') as out:
-            for filename, id, rank, score in fin:
-                out.write(f"{filename} Q0 {id} {rank} {score} TestRun\n")
+            cleaned = clean(text)
+            queries = calculateQueryVector(cleaned)
+            return queries
+        
+def main():
+    documents = loadDocuments()
+    index = index(documents.values())
+    docVectors = createDocumentVectors(list(documents.values()))
+    for file in os.listdir('queries'):
+        with open(os.path.join('queries', file), 'r') as f:
+            text = f.read()
+            cleaned = clean(text)
+            query = calculateQueryVector(cleaned)
+            relevantDocs = getrelevantdocs(text, index)
+            relevantDocVectors = [docVectors[i] for i in relevantDocs]
+            similarity = cosine_similarity(query, relevantDocVectors)
+            print(similarity)
+    queryVector = calculateQueryVector(query)
+    relevantDocs = getrelevantdocs(query, index)
+    relevantDocVectors = [docVectors[i] for i in relevantDocs]
+    similarity = cosine_similarity(queryVector, relevantDocVectors)
+    print(similarity)
+    
+    
 
 def timer():
     start = time.time()
