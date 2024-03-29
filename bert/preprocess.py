@@ -6,6 +6,7 @@ import os
 import string
 import json
 import chardet 
+import re
 
 from bs4 import BeautifulSoup
 from nltk.corpus import stopwords
@@ -28,7 +29,13 @@ def readFiles(path):
         result = chardet.detect(rawdata)
         charenc = result['encoding']
         with open(os.path.join(path, file), 'r', encoding=charenc) as f:
-            parse = BeautifulSoup(f, 'html.parser')
+            text = f.read()
+            docno = re.search(r'<DOCNO>(.*?)</DOCNO>', text)
+            if docno:
+                docno = docno.group(1)
+            else:
+                docno = file
+            parse = BeautifulSoup(text, 'html.parser')
             content = parse.findAll("text")
             tokensFromDoc = []
             for word in content:
@@ -41,6 +48,7 @@ def readFiles(path):
     return v
 
 
+# NO TOKENIZATION
 def clean(words):
     stemmer = PorterStemmer()
     stop_words = set(line.strip('\n') for line in open("./StopWords.txt", "r"))
