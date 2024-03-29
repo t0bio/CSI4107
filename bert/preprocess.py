@@ -19,6 +19,8 @@ nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
 # nltk.download('maxent_ne_chunker')
 
+# TODO: Reimplement functions here to disable tokenization, since BERT and USE dont take tokenized input
+
 def readFiles(path):
     v = dict()
     for file in os.listdir(path):

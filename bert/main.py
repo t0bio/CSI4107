@@ -4,16 +4,16 @@ from sklearn.metrics.pairwise import cosine_similarity
 import time
 from preprocess import *
 from collections import defaultdict
+import tensorflow_hub as hub
 
 
 model = BertModel.from_pretrained('bert-base-uncased')
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-def index(d):
+def indexer(d):
     ind = defaultdict(set)
     for docId, doc in enumerate(d):
-        words = nltk.word_tokenize(doc)
-        for word in words:
+        for word in doc:
             ind[word].add(docId)
     return ind
 
@@ -28,11 +28,9 @@ def calculateQueryVector(query):
     return outputs.last_hidden_state.mean(dim=1).detach().numpy()
 
 def getrelevantdocs(query, index):
-    words = nltk.word_tokenize(query)
     docs = set()
-    for word in words:
-        if word in index:
-            docs = docs.union(index[word])
+    for word in query:
+        docs = docs.union(index[word])
     return docs
 
 def loadDocuments():
@@ -49,7 +47,7 @@ def loadQueries():
         
 def main():
     documents = loadDocuments()
-    index = index(documents.values())
+    index = indexer(documents.values())
     docVectors = createDocumentVectors(list(documents.values()))
     for file in os.listdir('queries'):
         with open(os.path.join('queries', file), 'r') as f:
@@ -65,7 +63,6 @@ def main():
     relevantDocVectors = [docVectors[i] for i in relevantDocs]
     similarity = cosine_similarity(queryVector, relevantDocVectors)
     print(similarity)
-    
     
 
 def timer():
