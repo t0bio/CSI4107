@@ -39,10 +39,12 @@ def readFiles(path):
                 docno = file
             parse = BeautifulSoup(text, 'html.parser')
             content = parse.findAll("text")
-            cleanedTextFromDoc = []
+            cleanedTextFromDoc = ""
             for text in content:
                 cleanedText = clean(str(text).replace("<text>", "").replace("</text>", "").replace(",", " ").replace("-", " "))
-                cleanedTextFromDoc.append(cleanedText)
+                cleanedTextFromDoc += cleanedText + " "
+
+            cleanedTextFromDoc = cleanedTextFromDoc.strip()
             v[file]=cleanedTextFromDoc
 
     jsonFile(v)
@@ -83,7 +85,7 @@ def jsonFile(dictionary):
 
 def timer():
     start = time.time()
-    readFiles("./coll")
+    readFiles("/Users/vanishabagga/Desktop/a2/CSI4107/Assignment1/coll")
     end = time.time()
     print(f"Time taken: {end-start} seconds")
 timer()
