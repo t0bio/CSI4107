@@ -10,7 +10,7 @@ import re
 
 from bs4 import BeautifulSoup
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+#from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 
 # nltk.download('stopwords')
@@ -37,11 +37,11 @@ def readFiles(path):
                 docno = file
             parse = BeautifulSoup(text, 'html.parser')
             content = parse.findAll("text")
-            tokensFromDoc = []
-            for word in content:
-                tokensFromDoc.extend(clean(str(word).replace("<text>", "").replace("</text>", "").replace(",", " ").replace("-", " ")))
-            uniqueTokensFromDoc = list(dict.fromkeys(tokensFromDoc))
-            v[file]=uniqueTokensFromDoc
+            cleanedTextFromDoc = []
+            for text in content:
+                cleanedText = clean(str(text).replace("<text>", "").replace("</text>", "").replace(",", " ").replace("-", " "))
+                cleanedTextFromDoc.append(cleanedText)
+            v[file]=cleanedTextFromDoc
 
     jsonFile(v)
 
@@ -49,18 +49,27 @@ def readFiles(path):
 
 
 # NO TOKENIZATION
-def clean(words):
+def clean(text):
     stemmer = PorterStemmer()
     stop_words = set(line.strip('\n') for line in open("./StopWords.txt", "r"))
-
-    tokens = []
-    for x in word_tokenize(words):
-        if x.lower() not in stop_words and x not in string.punctuation and not x.isnumeric():
-            # Apply stemming and lowercase conversion
-            stemmed_token = stemmer.stem(x.lower())
-            # Add the stemmed token to the list
-            tokens.append(stemmed_token)
-    return tokens
+    
+    #remove HTML tags
+    text = BeautifulSoup(text, "html.parser").get_text()
+    
+    #convert to lowercase
+    text = text.lower()
+    
+    #remove punctuation
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    
+    #remove stopwords, numeric words, apply stemming
+    words = text.split()  
+    cleaned_words = [stemmer.stem(word) for word in words if word not in stop_words and not word.isnumeric()]
+    
+    #reconstruct text
+    cleaned_text = ' '.join(cleaned_words)
+    
+    return cleaned_text
 
 import json
 
