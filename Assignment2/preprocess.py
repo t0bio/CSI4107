@@ -54,7 +54,7 @@ def clean(words):
 import json
 
 def jsonFile(dictionary):
-    with open("./Tokens.json", "w") as outfile:
+    with open("tokens.json", "w") as outfile:
         # Convert the dictionary to JSON string
         json_str = json.dumps(dictionary)
         # Write the JSON string to the file

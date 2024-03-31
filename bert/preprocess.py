@@ -7,6 +7,8 @@ import string
 import json
 import chardet 
 import re
+import json
+import time
 
 from bs4 import BeautifulSoup
 from nltk.corpus import stopwords
@@ -47,22 +49,15 @@ def readFiles(path):
 
     return v
 
-
-# NO TOKENIZATION
 def clean(words):
     stemmer = PorterStemmer()
     stop_words = set(line.strip('\n') for line in open("./StopWords.txt", "r"))
-
     tokens = []
     for x in word_tokenize(words):
         if x.lower() not in stop_words and x not in string.punctuation and not x.isnumeric():
-            # Apply stemming and lowercase conversion
             stemmed_token = stemmer.stem(x.lower())
-            # Add the stemmed token to the list
             tokens.append(stemmed_token)
     return tokens
-
-import json
 
 def jsonFile(dictionary):
     with open("tokens.json", "w") as outfile:
@@ -72,5 +67,10 @@ def jsonFile(dictionary):
         outfile.write(json_str)
 
 
-    
+def timer():
+    start = time.time()
+    readFiles("./coll")
+    end = time.time()
+    print(f"Time taken: {end-start} seconds")
+timer()
     
