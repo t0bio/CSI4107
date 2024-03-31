@@ -1,7 +1,4 @@
 import nltk
-import pandas as pd
-import pickle as pk
-import numpy as np
 import os
 import string
 import json
@@ -11,8 +8,6 @@ import json
 import time
 
 from bs4 import BeautifulSoup
-from nltk.corpus import stopwords
-#from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 
 # nltk.download('stopwords')
@@ -26,11 +21,11 @@ nltk.download('punkt')
 
 def readFiles(path):
     v = dict()
-    for file in os.listdir(path):
+    for file in os.listdir(path): # for every file in the coll directory 
         rawdata = open(os.path.join(path, file), "rb").read()
         result = chardet.detect(rawdata)
-        charenc = result['encoding']
-        with open(os.path.join(path, file), 'r', encoding=charenc) as f:
+        charenc = result['encoding'] 
+        with open(os.path.join(path, file), 'r', encoding=charenc) as f: 
             text = f.read()
             docno = re.search(r'<DOCNO>(.*?)</DOCNO>', text)
             if docno:
@@ -40,11 +35,14 @@ def readFiles(path):
             parse = BeautifulSoup(text, 'html.parser')
             content = parse.findAll("text")
             cleanedTextFromDoc = ""
-            for text in content:
-                cleanedText = clean(str(text).replace("<text>", "").replace("</text>", "").replace(",", " ").replace("-", " "))
-                cleanedTextFromDoc += cleanedText + " "
-
-            cleanedTextFromDoc = cleanedTextFromDoc.strip()
+            # for text in content:
+            #     cleanedText = clean(str(text).replace("<text>", "").replace("</text>", "").replace(",", " ").replace("-", " "))
+            #     cleanedTextFromDoc += cleanedText + " "
+            if content: # if stuff in text tag exists, preprocess
+                cleanedText = clean(str(content).replace("<text>", "").replace("</text>", "").replace(",", " ").replace("-", " "))
+                # tokenize the cleaned text
+                tokens = nltk.word_tokenize(cleanedText)
+                cleanedTextFromDoc = tokens
             v[file]=cleanedTextFromDoc
 
     jsonFile(v)
@@ -85,7 +83,7 @@ def jsonFile(dictionary):
 
 def timer():
     start = time.time()
-    readFiles("/Users/vanishabagga/Desktop/a2/CSI4107/Assignment1/coll")
+    readFiles("./coll")
     end = time.time()
     print(f"Time taken: {end-start} seconds")
 timer()
