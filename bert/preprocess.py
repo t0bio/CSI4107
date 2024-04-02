@@ -83,8 +83,9 @@ def jsonFile(dictionary):
 
 def timer():
     start = time.time()
-    readFiles("./coll")
+    readFiles("/Users/vanishabagga/Desktop/a2/CSI4107/Assignment1/coll")
     end = time.time()
     print(f"Time taken: {end-start} seconds")
 timer()
+    
     
