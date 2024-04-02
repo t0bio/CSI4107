@@ -21,21 +21,32 @@ def indexer(d):
 def createDocumentVectors(documents, model, tokenizer=None):
     docVectors = {}
     for docId, doc in documents.items():
-        if tokenizer:  # If a tokenizer is provided, use it to tokenize the document
-            inputs = tokenizer(doc, return_tensors='pt', padding=True, truncation=True)
-            outputs = model(**inputs)
-            docVectors[docId] = outputs.last_hidden_state.mean(dim=1).detach().numpy()
-        else:  # If no tokenizer is provided, assume the model can handle raw text
-            docVectors[docId] = model([doc])[0]
+        doc = ' '.join(doc)
+        inputs = tokenizer(doc, return_tensors='pt', padding=True, truncation=True)
+        outputs = model(**inputs)
+        docVectors[docId] = outputs.last_hidden_state.mean(dim=1).detach().numpy()
     return docVectors
 
+def createDocumentVectorsUSE(documents):
+    docVectors = {}
+    for docId, doc in documents.items():
+        doc_text = ' '.join(doc)
+        # Encode the document using USE
+        embeddings = use_model([doc_text])
+        docVectors[docId] = embeddings.numpy().squeeze()
+    return docVectors
+
+
 def calculateQueryVector(query, model, tokenizer=None):
-    if tokenizer:  # If a tokenizer is provided, use it to tokenize the query
-        inputs = tokenizer(query, return_tensors='pt', padding=True, truncation=True)
-        outputs = model(**inputs)
-        return outputs.last_hidden_state.mean(dim=1).detach().numpy()
-    else:  # If no tokenizer is provided, assume the model can handle raw text
-        return model([query])[0]
+    query = ' '.join(query)
+    inputs = tokenizer(query, return_tensors='pt', padding=True, truncation=True)
+    outputs = model(**inputs)
+    return outputs.last_hidden_state.mean(dim=1).detach().numpy()
+
+def calculateQueryVectorUSE(query):
+    query = ' '.join(query)
+    embeddings = use_model([query])
+    return embeddings.numpy().squeeze()
 
 def getrelevantdocs(query, index):
     docs = set()
@@ -48,37 +59,49 @@ def loadDocuments():
         return json.load(f)
     
 def loadQueries():
-    for file in os.listdir('queries'):
-        with open(os.path.join('queries', file), 'r') as f:
-            text = f.read()
-            cleaned = clean(text)
-            queries = calculateQueryVector(cleaned, bert_model, bert_tokenizer)
-            return queries
+    with open('queries.json', 'r') as f:
+        return json.load(f)
         
 def main():
+    bresults = dict()
+    uresults = dict()
+    # useresults = dict()
     documents = loadDocuments()
+    queries = loadQueries()
     index = indexer(documents.values())
     # Create document vectors using both BERT and Universal Sentence Encoder
     bert_docVectors = createDocumentVectors(documents, bert_model, bert_tokenizer)
-    use_docVectors = createDocumentVectors(documents, use_model)
-    for file in os.listdir('queries'):
-        with open(os.path.join('queries', file), 'r') as f:
-            text = f.read()
-            cleaned = clean(text)
-            # Calculate query vectors using both BERT and Universal Sentence Encoder
-            bert_query = calculateQueryVector(cleaned, bert_model, bert_tokenizer)
-            use_query = calculateQueryVector(cleaned, use_model)
-            relevantDocs = getrelevantdocs(text, index)
-            # Calculate similarity scores using both BERT and Universal Sentence Encoder
-            bert_similarity = cosine_similarity(bert_query, [bert_docVectors[i] for i in relevantDocs])
-            use_similarity = cosine_similarity(use_query, [use_docVectors[i] for i in relevantDocs])
-            # write the scores out to two different files for each model
-            with open(f'bert_results', 'w') as f:
-                for i, score in zip(relevantDocs, bert_similarity):
-                    f.write(f'{i} {score}\n')
-            with open(f'use_results', 'w') as f:
-                for i, score in zip(relevantDocs, use_similarity):
-                    f.write(f'{i} {score}\n')
+    use_docVectors = createDocumentVectorsUSE(documents)
+
+    #processing each query:
+    for queryId, query in queries.items():
+        # Calculate query vectors using both BERT and Universal Sentence Encoder
+        bert_queryVector = calculateQueryVector(' '.join(query), bert_model, bert_tokenizer)
+        use_queryVector = calculateQueryVectorUSE(' '.join(query))
+        # use_queryVector = calculateQueryVector(' '.join(query), use_model)
+
+        # Reshape the query vector for cosine similarity calculation
+        use_queryVector = use_queryVector.reshape(1, -1)
+        
+        # Get relevant documents using the index
+        relevantDocs = getrelevantdocs(query, index)
+        
+        # Calculate cosine similarity between query and document vectors
+        bertsimilarity = {docId: cosine_similarity(bert_queryVector, docVector)[0][0] for docId, docVector in bert_docVectors.items() if docId in relevantDocs}
+        usesimilarity = {docId: cosine_similarity(use_queryVector, docVector.reshape(1, -1))[0][0] for docId, docVector in use_docVectors.items() if docId in relevantDocs}
+        #sort by similarity
+        btopdocs = sorted(bertsimilarity, key=bertsimilarity.get, reverse=True)[:1000]
+        utopdocs = sorted(usesimilarity, key=usesimilarity.get, reverse=True)[:1000]
+        #store results
+        bresults[queryId] = btopdocs
+        uresults[queryId] = utopdocs
+        
+    # writing to files
+    with open('bertresults.json', 'w') as f:
+        json.dump(bresults, f)
+
+    with open('useresults.json', 'w') as f:
+        json.dump(uresults, f)
 
 
 def timer():

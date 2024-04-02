@@ -80,12 +80,10 @@ def jsonFile(dictionary):
         # Write the JSON string to the file
         outfile.write(json_str)
 
-
 def timer():
     start = time.time()
-    readFiles("/Users/vanishabagga/Desktop/a2/CSI4107/Assignment1/coll")
+    readFiles('/Users/vanishabagga/Desktop/a2/CSI4107/Assignment1/coll')
     end = time.time()
     print(f"Time taken: {end-start} seconds")
 timer()
-    
     
