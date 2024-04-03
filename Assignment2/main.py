@@ -6,12 +6,10 @@ from collections import defaultdict
 # from preprocess import *
 import json
 from sklearn.feature_extraction.text import TfidfVectorizer
-import tensorflow_hub as hub
 
 # Load BERT and Universal Sentence Encoder models
 bert_model = BertModel.from_pretrained('bert-base-uncased')
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-use_model = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
 
 def indexer(d):
     ind = defaultdict(set)
@@ -29,24 +27,10 @@ def createDocumentVectors(documents, model, tokenizer=None):
         docVectors[docId] = outputs.last_hidden_state.mean(dim=1).detach().numpy()
     return docVectors
 
-def createDocumentVectorsUSE(documents):
-    docVectors = {}
-    for docId, doc in documents.items():
-        doc_text = ' '.join(doc)
-        # Encode the document using USE
-        embeddings = use_model([doc_text])
-        docVectors[docId] = embeddings.numpy().squeeze()
-    return docVectors
-
 def calculateQueryVector(query, model, tokenizer=None):
     inputs = tokenizer(query, return_tensors='pt', padding=True, truncation=True)
     outputs = model(**inputs)
     return outputs.last_hidden_state.mean(dim=1).detach().numpy()
-
-def calculateQueryVectorUSE(query):
-    query = ' '.join(query)
-    embeddings = use_model([query])
-    return embeddings.numpy().squeeze()
 
 def getrelevantdocs(query, index):
     docs = set()
@@ -68,7 +52,6 @@ def loadQueries():
         
 def main():
     bresults = dict()
-    uresults = dict()
     # useresults = dict()
     documents = loadDocuments()
     queries = loadQueries()
@@ -76,7 +59,6 @@ def main():
     # print (index)
     # Create document vectors using both BERT and Universal Sentence Encoder
     bert_docVectors = createDocumentVectors(documents, bert_model, bert_tokenizer)
-    use_docVectors = createDocumentVectorsUSE(documents)
 
     # #processing each query:
     # for queryId, query in queries.items():
